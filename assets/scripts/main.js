@@ -47,16 +47,16 @@ function initializeServiceWorker() {
   // B1. TODO - Check if 'serviceWorker' is supported in the current browser
   if ('serviceWorker' in navigator) {
     // B2. TODO - Listen for the 'load' event on the window object.
-    window.addEventListener('load', function () {
+    window.addEventListener('load',() => {
       // B3. TODO - Register './sw.js' as a service worker (The MDN article
       //            "Using Service Workers" will help you here)
-      this.navigator.serviceWorker.register('/sw.js')
-        .then(function (registration) {
+      navigator.serviceWorker.register('./sw.js')
+        .then((registration) => {
           // B4. TODO - Once the service worker has been successfully registered, console
           //            log that it was successful.
           console.log('serviceWorker registration successful');
         })
-        .catch(function (error) {
+        .catch((error) => {
           // B5. TODO - In the event that the service worker registration fails, console
           //            log that it has failed.
           console.log('serviceWorker registration failed');
@@ -80,7 +80,7 @@ async function getRecipes() {
   // A1. TODO - Check local storage to see if there are any recipes.
   //            If there are recipes, return them.
   const savedRecipes = localStorage.getItem('recipes');
-  if (savedRecipes !== null) {
+  if (savedRecipes) {
     return JSON.parse(savedRecipes);
   }
   /**************************/
@@ -97,11 +97,12 @@ async function getRecipes() {
   return new Promise(async (resolve, reject) => {
     // A4. TODO - Loop through each recipe in the RECIPE_URLS array constant
     //            declared above
-    for (let url of RECIPE_URLS) {
+    
       // A5. TODO - Since we are going to be dealing with asynchronous code, create
       //            a try / catch block. A6-A9 will be in the try portion, A10-A11
       //            will be in the catch portion.
-      try {
+    try {
+      for (let url of RECIPE_URLS) {
         // A6. TODO - For each URL in that array, fetch the URL - MDN also has a great
         //            article on fetch(). NOTE: Fetches are ASYNCHRONOUS, meaning that
         //            you must either use "await fetch(...)" or "fetch.then(...)". This
@@ -117,18 +118,20 @@ async function getRecipes() {
         //            if you have, then save the recipes to storage using the function
         //            we have provided. Then, pass the recipes array to the Promise's
         //            resolve() method.
-        if (RECIPE_URLS.indexOf(url) === RECIPE_URLS.length-1) {
-          localStorage.setItem('recipes', JSON.stringify(recipes));
+        if (recipes.length === RECIPE_URLS.length) {
+          // localStorage.setItem('recipes', JSON.stringify(recipes));
+          saveRecipesToStorage(recipes);
           resolve(recipes);
         }
-      } catch (error) {
-        // A10. TODO - Log any errors from catch using console.error
-        console.error(error);
-        // A11. TODO - Pass any errors to the Promise's reject() function
-        reject(error);
       }
+    } catch (error) {
+      // A10. TODO - Log any errors from catch using console.error
+      console.error(error);
+      // A11. TODO - Pass any errors to the Promise's reject() function
+      reject(error);
     }
-  })
+  });
+
   // A4-A11 will all be *inside* the callback function we passed to the Promise
   // we're returning
   /**************************/
